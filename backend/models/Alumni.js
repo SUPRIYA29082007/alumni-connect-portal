@@ -1,0 +1,3 @@
+const mongoose=require("mongoose");
+const schema=new mongoose.Schema({alumniId:{type:String,required:true,unique:true},userId:{type:mongoose.Schema.Types.ObjectId,ref:"Users",required:true,unique:true},alumniName:{type:String,required:true},rollNumber:{type:String,required:true},graduationYear:{type:Number,required:true},department:{type:String,required:true},companyName:{type:String,default:""},designation:{type:String,default:""},email:{type:String,required:true},mobile:{type:String,default:""},skills:{type:String,default:""},bio:{type:String,default:""}},{timestamps:true});
+module.exports=mongoose.model("Alumni",schema,"Alumni");

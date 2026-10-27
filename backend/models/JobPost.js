@@ -1,0 +1,3 @@
+const mongoose=require("mongoose");
+const schema=new mongoose.Schema({jobId:{type:String,required:true,unique:true},alumniId:{type:mongoose.Schema.Types.ObjectId,ref:"Alumni",required:true},companyName:{type:String,required:true},jobTitle:{type:String,required:true},location:{type:String,default:""},experienceRequired:{type:String,default:""},lastDate:{type:String,default:""},jobLink:{type:String,default:""},status:{type:String,default:"Open"}},{timestamps:true});
+module.exports=mongoose.model("JobPost",schema,"JobPosts");

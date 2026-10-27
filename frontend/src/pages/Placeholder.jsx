@@ -1,0 +1,1 @@
+import React from "react";export default function Placeholder({title,text}){return <><main className="dashboard"><span className="eyebrow">ALUMNI CONNECT</span><h1>{title}</h1><p>{text}</p><div className="info-box">This module is connected to the project structure and can be extended with the corresponding REST API.</div></main></>}

@@ -4,7 +4,6 @@ const Alumni=require("../models/Alumni");
 const bcrypt=require("bcryptjs");
 const jwt=require("jsonwebtoken");
 const crypto=require("crypto");
-const {Resend}=require("resend");
 const {OAuth2Client}=require("google-auth-library");
 
 const googleClient=process.env.GOOGLE_CLIENT_ID?new OAuth2Client(process.env.GOOGLE_CLIENT_ID):null;
@@ -42,7 +41,9 @@ const register=async(req,res)=>{
         if(password.length<6)
             return res.status(400).json({message:"Password must contain at least 6 characters"});
 
-        if(await Users.findOne({email}))
+        const normalizedEmail=email.trim().toLowerCase();
+
+        if(await Users.findOne({email:normalizedEmail}))
             return res.status(400).json({message:"Email already registered"});
 
         if(await Users.findOne({userId}))
@@ -52,7 +53,7 @@ const register=async(req,res)=>{
         const now=istNow();
 
         const user=await Users.create({
-            userId,name,email,password:hash,role,
+            userId,name,email:normalizedEmail,password:hash,role,
             isApproved:role==="student",
             department:department||"",
             currentYear:currentYear||"",
@@ -74,7 +75,7 @@ const register=async(req,res)=>{
                 department,
                 companyName:companyName||"",
                 designation:designation||"",
-                email,
+                email:normalizedEmail,
                 mobile,
                 skills:skills||"",
                 bio:bio||""
@@ -105,7 +106,9 @@ const registerAdmin=async(req,res)=>{
         if(!userId||!name||!email||!password)
             return res.status(400).json({message:"All fields are required"});
 
-        if(await Users.findOne({email}))
+        const normalizedEmail=email.trim().toLowerCase();
+
+        if(await Users.findOne({email:normalizedEmail}))
             return res.status(400).json({message:"Email already registered"});
 
         if(await Users.findOne({userId}))
@@ -115,7 +118,7 @@ const registerAdmin=async(req,res)=>{
         const now=istNow();
 
         await Users.create({
-            userId,name,email,password:hash,role:"admin",
+            userId,name,email:normalizedEmail,password:hash,role:"admin",
             isApproved:true,
             registeredAtIST:now
         });
@@ -133,7 +136,7 @@ const login=async(req,res)=>{
         if(!email||!password)
             return res.status(400).json({message:"Email and password are required"});
 
-        const u=await Users.findOne({email});
+        const u=await Users.findOne({email:email.trim().toLowerCase()});
 
         if(!u)
             return res.status(404).json({message:"User not found"});
@@ -161,7 +164,7 @@ const login=async(req,res)=>{
 const googleLogin=async(req,res)=>{
     try{
         if(!googleClient)
-            return res.status(503).json({message:"Google Sign-In is not configured. Add GOOGLE_CLIENT_ID to backend .env."});
+            return res.status(503).json({message:"Google Sign-In is not configured. Add GOOGLE_CLIENT_ID to backend environment variables."});
 
         const {credential}=req.body;
 
@@ -178,11 +181,12 @@ const googleLogin=async(req,res)=>{
         if(!payload?.email||!payload.email_verified)
             return res.status(401).json({message:"Google email could not be verified"});
 
-        let u=await Users.findOne({email:payload.email.toLowerCase()});
+        const email=payload.email.toLowerCase();
+        let u=await Users.findOne({email});
         const now=istNow();
 
         if(!u){
-            const base=(payload.email.split("@")[0]||"student")
+            const base=(email.split("@")[0]||"student")
                 .replace(/[^a-zA-Z0-9]/g,"")
                 .slice(0,20)||"student";
 
@@ -195,7 +199,7 @@ const googleLogin=async(req,res)=>{
             u=await Users.create({
                 userId,
                 name:payload.name||base,
-                email:payload.email.toLowerCase(),
+                email,
                 password:"",
                 role:"student",
                 isApproved:true,
@@ -221,45 +225,53 @@ const googleLogin=async(req,res)=>{
 };
 
 const pendingAlumni=async(req,res)=>{
-    const users=await Users.find({role:"alumni",isApproved:false})
-        .select("name email userId createdAt registeredAtIST")
-        .sort({createdAt:-1});
+    try{
+        const users=await Users.find({role:"alumni",isApproved:false})
+            .select("name email userId createdAt registeredAtIST")
+            .sort({createdAt:-1});
 
-    res.json(users);
+        res.json(users);
+    }catch(e){
+        res.status(500).json({message:"Could not fetch pending alumni"});
+    }
 };
 
 const approveAlumni=async(req,res)=>{
-    const u=await Users.findOneAndUpdate(
-        {_id:req.params.userId,role:"alumni"},
-        {isApproved:true},
-        {new:true}
-    );
+    try{
+        const u=await Users.findOneAndUpdate(
+            {_id:req.params.userId,role:"alumni"},
+            {isApproved:true},
+            {new:true}
+        );
 
-    if(!u)
-        return res.status(404).json({message:"Alumni user not found"});
+        if(!u)
+            return res.status(404).json({message:"Alumni user not found"});
 
-    res.json({message:"Alumni approved",user:u});
+        res.json({message:"Alumni approved",user:u});
+    }catch(e){
+        res.status(500).json({message:"Could not approve alumni"});
+    }
 };
 
 const forgotPassword=async(req,res)=>{
+    let u;
+
     try{
         const email=(req.body.email||"").trim().toLowerCase();
-
-        const u=await Users.findOne({email});
 
         const safe={
             message:"If the account exists, a password reset link has been sent to the registered email address."
         };
 
+        if(!email)return res.status(400).json({message:"Email is required"});
+
+        u=await Users.findOne({email});
+
         if(!u)return res.json(safe);
 
-        if(!process.env.RESEND_API_KEY||!process.env.RESEND_FROM_EMAIL){
-            return res.status(503).json({
-                message:"Email service is not configured. Add RESEND_API_KEY and RESEND_FROM_EMAIL."
-            });
+        if(!process.env.GOOGLE_SCRIPT_URL||!process.env.GOOGLE_SCRIPT_SECRET){
+            return res.status(503).json({message:"Google email service is not configured"});
         }
-
-        const resend=new Resend(process.env.RESEND_API_KEY);
 
         const raw=crypto.randomBytes(32).toString("hex");
 
@@ -271,38 +283,43 @@ const forgotPassword=async(req,res)=>{
 
         const link=`${process.env.FRONTEND_URL||"http://localhost:5173"}/reset-password?token=${raw}`;
 
-        const {data,error}=await resend.emails.send({
-            from:process.env.RESEND_FROM_EMAIL,
-            to:[u.email],
-            subject:"Alumni Connect - Password Reset",
-            text:`Hello ${u.name},
-
-Use this link to reset your Alumni Connect password. It expires in 15 minutes:
-${link}
-
-Reset requested at (IST): ${u.resetRequestedAtIST}
-
-If you did not request this, ignore this email.`,
-            html:`<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;padding:30px;border:1px solid #e5e7eb;border-radius:18px">
-<h2 style="color:#4f46e5">Alumni Connect</h2>
-<p>Hello ${u.name},</p>
-<p>We received a request to reset your password.</p>
-<p><a href="${link}" style="display:inline-block;padding:12px 20px;background:#4f46e5;color:#fff;text-decoration:none;border-radius:9px;font-weight:700">Reset Password</a></p>
-<p>This link expires in <b>15 minutes</b>.</p>
-<p style="color:#667085;font-size:13px">Requested at (IST): ${u.resetRequestedAtIST}</p>
-<p style="color:#667085;font-size:12px">If you did not request this, you can safely ignore this email.</p>
-</div>`
+        const response=await fetch(process.env.GOOGLE_SCRIPT_URL,{
+            method:"POST",
+            headers:{"Content-Type":"text/plain;charset=utf-8"},
+            body:JSON.stringify({
+                email:u.email,
+                resetLink:link,
+                secret:process.env.GOOGLE_SCRIPT_SECRET
+            }),
+            redirect:"follow",
+            signal:AbortSignal.timeout(20000)
         });
 
-        if(error){
-            console.log("RESEND EMAIL ERROR:",error);
+        const result=await response.json();
+
+        if(!response.ok||result.success!==true){
+            console.log("GOOGLE EMAIL ERROR:",result);
+            u.resetPasswordToken="";
+            u.resetPasswordExpires=null;
+            await u.save();
             return res.status(502).json({message:"Could not send reset email"});
         }
 
-        res.json(safe);
+        return res.json(safe);
     }catch(e){
-        console.log("FORGOT PASSWORD ERROR:",e);
-        res.status(500).json({message:"Could not send reset email"});
+        console.log("FORGOT PASSWORD ERROR:",e.message);
+
+        if(u){
+            try{
+                u.resetPasswordToken="";
+                u.resetPasswordExpires=null;
+                await u.save();
+            }catch(cleanupError){
+                console.log("RESET TOKEN CLEANUP ERROR:",cleanupError.message);
+            }
+        }
+
+        return res.status(500).json({message:"Could not send reset email"});
     }
 };
 
@@ -333,6 +350,7 @@ const resetPassword=async(req,res)=>{
             passwordResetAtIST:u.passwordResetAtIST
         });
     }catch(e){
+        console.log("RESET PASSWORD ERROR:",e.message);
         res.status(500).json({message:"Password reset failed"});
     }
 };

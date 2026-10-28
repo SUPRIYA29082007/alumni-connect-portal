@@ -9,8 +9,21 @@ const {OAuth2Client}=require("google-auth-library");
 const googleClient=process.env.GOOGLE_CLIENT_ID?new OAuth2Client(process.env.GOOGLE_CLIENT_ID):null;
 const tokenFor=u=>jwt.sign({id:u._id,userId:u.userId,name:u.name,role:u.role},process.env.JWT_SECRET,{expiresIn:"1d"});
 const istNow=()=>new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true}).format(new Date());
-const mailer=()=>{if(!process.env.SMTP_USER||!process.env.SMTP_PASS)return null;return nodemailer.createTransport({service:process.env.SMTP_SERVICE||"Gmail",auth:{user:process.env.SMTP_USER,pass:process.env.SMTP_PASS}})};
-
+const mailer=()=>{
+    if(!process.env.SMTP_USER||!process.env.SMTP_PASS)return null;
+    return nodemailer.createTransport({
+        host:"smtp.gmail.com",
+        port:465,
+        secure:true,
+        auth:{
+            user:process.env.SMTP_USER,
+            pass:process.env.SMTP_PASS
+        },
+        connectionTimeout:20000,
+        greetingTimeout:20000,
+        socketTimeout:20000
+    });
+};
 const register=async(req,res)=>{try{const {userId,name,email,password,role,department,currentYear,rollNumber,graduationYear,mobile,companyName,designation,skills,bio}=req.body;if(!userId||!name||!email||!password||!role)return res.status(400).json({message:"All fields are required"});if(!["student","alumni"].includes(role))return res.status(400).json({message:"Use the separate admin registration form for admin accounts"});if(password.length<6)return res.status(400).json({message:"Password must contain at least 6 characters"});if(await Users.findOne({email}))return res.status(400).json({message:"Email already registered"});if(await Users.findOne({userId}))return res.status(400).json({message:"User ID already exists"});const hash=await bcrypt.hash(password,10);const now=istNow();const user=await Users.create({userId,name,email,password:hash,role,isApproved:role==="student",department:department||"",currentYear:currentYear||"",registeredAtIST:now});if(role==="alumni"){if(!rollNumber||!graduationYear||!department||!mobile){await Users.findByIdAndDelete(user._id);return res.status(400).json({message:"Alumni profile fields are required"})}await Alumni.create({alumniId:`AL-${user.userId}`,userId:user._id,alumniName:name,rollNumber,graduationYear:Number(graduationYear),department,companyName:companyName||"",designation:designation||"",email,mobile,skills:skills||"",bio:bio||""})}res.status(201).json({message:role==="alumni"?"Alumni registration submitted for admin approval":"Student registration successful",userId:user.userId,mongoId:user._id,role:user.role,isApproved:user.isApproved,registeredAtIST:now})}catch(e){console.log("REGISTRATION ERROR:",e);res.status(500).json({message:"Registration failed",error:e.message})}};
 
 const registerAdmin=async(req,res)=>{try{const {userId,name,email,password,adminKey}=req.body;if(adminKey!==process.env.ADMIN_REGISTRATION_KEY)return res.status(403).json({message:"Invalid admin registration key"});if(!userId||!name||!email||!password)return res.status(400).json({message:"All fields are required"});if(await Users.findOne({email}))return res.status(400).json({message:"Email already registered"});if(await Users.findOne({userId}))return res.status(400).json({message:"User ID already exists"});const hash=await bcrypt.hash(password,10);const now=istNow();await Users.create({userId,name,email,password:hash,role:"admin",isApproved:true,registeredAtIST:now});res.status(201).json({message:"Admin registration successful",registeredAtIST:now})}catch(e){res.status(500).json({message:"Admin registration failed",error:e.message})}};

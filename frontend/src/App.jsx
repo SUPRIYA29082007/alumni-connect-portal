@@ -71,18 +71,20 @@ export default function App(){
 
       <Route path="/reset-password" element={<Layout><ResetPassword/></Layout>} />
 
-      <Route path="/alumni" element={<Layout><AlumniDirectory/></Layout>} />
+      <Route path="/alumni" element={<Protected><Layout><AlumniDirectory/></Layout></Protected>} />
 
       <Route
         path="/alumni/:id"
         element={
-          <Layout>
-            <AlumniDetails/>
-          </Layout>
+          <Protected>
+            <Layout>
+              <AlumniDetails/>
+            </Layout>
+          </Protected>
         }
       />
 
-      <Route path="/jobs" element={<Layout><Jobs/></Layout>} />
+      <Route path="/jobs" element={<Protected><Layout><Jobs/></Layout></Protected>} />
 
       <Route
         path="/student-dashboard"

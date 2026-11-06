@@ -5792,3 +5792,211 @@ footer a:hover{
 .password-toggle{position:absolute;right:9px;top:50%;transform:translateY(-50%);border:1px solid #d7d8ff;background:#f4f2ff;color:#4f46e5;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:700;cursor:pointer;transition:background .2s,color .2s,transform .2s;}
 .password-toggle:hover{background:#4f46e5;color:#fff;}
 .password-toggle:focus-visible{outline:2px solid #4f46e5;outline-offset:2px;}
+
+/* =====================================================
+   APPROVED ALUMNI CONNECT HOMEPAGE REFERENCE
+   Footer styles remain unchanged.
+===================================================== */
+.reference-navbar{
+  height:66px;
+  padding:0 5.2%;
+  background:#fff;
+  border-bottom:1px solid #e6edf8;
+  box-shadow:0 2px 10px rgba(17,45,92,.04);
+}
+.reference-brand{display:flex;align-items:center;gap:9px;color:#153b80;font-size:16px;font-weight:800;white-space:nowrap}
+.reference-brand-mark{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;color:#fff;background:linear-gradient(145deg,#54a8ff,#1454d2);clip-path:polygon(50% 0,100% 30%,100% 78%,50% 100%,0 78%,0 30%);font-size:12px}
+.reference-nav-links{display:flex;align-items:center;gap:25px}
+.reference-nav-links>a{font-size:12px;font-weight:600;color:#19345f;white-space:nowrap}
+.reference-nav-links>a:hover{color:#1766e8}
+.reference-nav-links .reference-nav-login,.reference-nav-links .reference-nav-register{padding:8px 15px;border-radius:20px;border:1px solid #2366df;color:#1552c6}
+.reference-nav-links .reference-nav-login{background:#155bd8;color:#fff;box-shadow:0 3px 8px rgba(21,91,216,.2)}
+.reference-nav-links .reference-nav-register{background:#fff}
+.reference-home{min-height:0;background:#fff}
+.reference-hero{position:relative;isolation:isolate;display:flex;align-items:center;min-height:365px;overflow:hidden;background:linear-gradient(112deg,#071d50 0%,#102f70 56%,#1b4a91 100%);color:#fff}
+.reference-hero:before{content:"";position:absolute;z-index:-1;inset:0;background:radial-gradient(circle at 9% 100%,rgba(45,117,230,.3),transparent 43%)}
+.reference-hero-copy{position:relative;z-index:2;width:55%;padding:55px 0 52px 7.3%}
+.reference-hero-copy h1{margin:0 0 13px;font-size:clamp(30px,4vw,48px);line-height:1.08;letter-spacing:-1.3px;font-weight:800;color:#fff}
+.reference-hero-copy h1 span{color:#a9d5ff}
+.reference-hero-copy p{margin:0;color:#e2edff;font-size:15px;line-height:1.55;font-weight:400}
+.reference-hero-actions{display:flex;align-items:center;gap:14px;margin-top:26px}
+.reference-hero-actions a{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-width:116px;padding:10px 18px;border-radius:22px;font-size:13px;font-weight:700;transition:transform .2s,box-shadow .2s}
+.reference-hero-actions a:hover{transform:translateY(-2px)}
+.reference-login-button{color:#fff;background:linear-gradient(110deg,#1680f5,#2361e6);box-shadow:0 6px 16px rgba(12,96,225,.3)}
+.reference-register-button{color:#fff;border:1px solid rgba(255,255,255,.8);background:rgba(4,25,65,.18)}
+.reference-campus-photo{position:absolute;z-index:1;right:0;top:0;width:48%;height:100%;background-image:url('/images/alumni-campus-reference.jpg');background-size:cover;background-position:center 48%;clip-path:ellipse(100% 100% at 100% 50%);border-top-left-radius:46% 100%;border-bottom-left-radius:46% 100%}
+.reference-access-note{min-height:37px;display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 15px;background:#f7faff;color:#183665;font-size:11px;font-weight:600;text-align:center;border-bottom:1px solid #e6edf8}
+.reference-access-note span{color:#155bd8;font-size:13px}
+@media(max-width:700px){
+ .reference-navbar{height:auto;min-height:62px;padding:12px 4%;gap:10px;flex-wrap:wrap}
+ .reference-brand{font-size:14px}
+ .reference-nav-links{gap:9px}
+ .reference-nav-links>a{font-size:10px}
+ .reference-nav-links .reference-nav-login,.reference-nav-links .reference-nav-register{padding:7px 10px}
+ .reference-hero{min-height:440px;align-items:flex-start}
+ .reference-hero-copy{width:100%;padding:38px 6% 225px}
+ .reference-hero-copy h1{font-size:34px}
+ .reference-hero-copy p{font-size:13px}
+ .reference-campus-photo{top:auto;bottom:0;width:78%;height:205px;clip-path:ellipse(100% 100% at 100% 50%);border-top-left-radius:48% 100%;border-bottom-left-radius:0}
+ .desktop-break{display:none}
+}
+@media(max-width:390px){
+ .reference-nav-links{gap:6px}
+ .reference-nav-links>a{font-size:9px}
+ .reference-nav-links .reference-nav-login,.reference-nav-links .reference-nav-register{padding:6px 8px}
+ .reference-hero-copy h1{font-size:30px}
+}
+
+
+/* =====================================================
+   HOMEPAGE POLISH — FULL HERO + COLOURED INTERACTIVE CTA
+   Footer and all other page styles remain unchanged.
+===================================================== */
+.reference-home{
+  min-height:calc(100vh - 66px - 37px - 150px);
+  display:flex;
+  flex-direction:column;
+  background:#f7faff;
+}
+.reference-hero{
+  flex:1 0 auto;
+  min-height:clamp(430px, calc(100vh - 270px), 620px);
+  width:100%;
+}
+.reference-hero-copy{
+  width:54%;
+  padding-top:58px;
+  padding-bottom:58px;
+}
+.reference-campus-photo{
+  width:49%;
+  background-position:center center;
+}
+.reference-nav-links .reference-nav-login,
+.reference-nav-links .reference-nav-register{
+  min-height:34px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.reference-nav-links .reference-nav-register{
+  color:#fff;
+  background:linear-gradient(110deg,#39a4ff,#1764e8);
+  border-color:#287ce9;
+  box-shadow:0 3px 10px rgba(30,111,225,.2);
+}
+.reference-nav-links .reference-nav-login:hover,
+.reference-nav-links .reference-nav-register:hover{
+  color:#fff;
+  transform:translateY(-2px);
+  box-shadow:0 7px 16px rgba(21,91,216,.28);
+}
+.reference-nav-links .reference-nav-register:hover{
+  background:linear-gradient(110deg,#238ce9,#104fc9);
+}
+.reference-hero-actions a{
+  min-height:44px;
+  border:1px solid transparent;
+  transition:transform .22s ease, box-shadow .22s ease, filter .22s ease;
+}
+.reference-login-button{
+  color:#fff;
+  background:linear-gradient(110deg,#27a1ff 0%,#1761e8 100%);
+  box-shadow:0 7px 18px rgba(18,111,235,.35);
+}
+.reference-register-button{
+  color:#fff;
+  border:1px solid #62b8ff;
+  background:linear-gradient(110deg,#087fcf 0%,#174fb7 100%);
+  box-shadow:0 7px 18px rgba(5,65,150,.25);
+}
+.reference-hero-actions a:hover{
+  transform:translateY(-3px) scale(1.025);
+  filter:brightness(1.1);
+  box-shadow:0 11px 24px rgba(4,28,76,.35);
+}
+.reference-hero-actions a:active,
+.reference-nav-links a:active{
+  transform:translateY(0) scale(.98);
+}
+.reference-hero-actions a:focus-visible,
+.reference-nav-links a:focus-visible{
+  outline:3px solid #8fd0ff;
+  outline-offset:3px;
+}
+@media(max-width:700px){
+  .reference-home{min-height:0;display:block}
+  .reference-hero{min-height:520px}
+  .reference-hero-copy{width:100%;padding:38px 6% 235px}
+  .reference-campus-photo{width:82%;height:220px}
+  .reference-hero-actions{flex-wrap:wrap}
+  .reference-hero-actions a{min-width:125px}
+}
+
+
+/* FINAL HOMEPAGE TUNING — remove the access strip and give the hero more height. */
+html{scroll-behavior:smooth;}
+.reference-home{
+  min-height:0;
+  display:block;
+  padding:0;
+  margin:0;
+  background:#fff;
+}
+.reference-hero{
+  min-height:clamp(520px, calc(100vh - 205px), 700px);
+  width:100%;
+}
+.reference-hero-copy{
+  padding-top:clamp(58px, 8vh, 88px);
+  padding-bottom:clamp(58px, 8vh, 88px);
+}
+.reference-nav-links>a:not(.reference-nav-login):not(.reference-nav-register){
+  position:relative;
+  padding:9px 2px;
+  transition:color .2s ease, transform .2s ease;
+}
+.reference-nav-links>a:not(.reference-nav-login):not(.reference-nav-register)::after{
+  content:"";
+  position:absolute;
+  left:0;right:0;bottom:2px;
+  height:2px;
+  border-radius:2px;
+  background:linear-gradient(90deg,#1680f5,#69c3ff);
+  transform:scaleX(0);
+  transform-origin:left;
+  transition:transform .22s ease;
+}
+.reference-nav-links>a:not(.reference-nav-login):not(.reference-nav-register):hover{
+  color:#1766e8;
+  transform:translateY(-1px);
+}
+.reference-nav-links>a:not(.reference-nav-login):not(.reference-nav-register):hover::after{transform:scaleX(1);}
+.reference-nav-links .reference-nav-login:active,
+.reference-nav-links .reference-nav-register:active{transform:scale(.96);}
+@media(max-width:700px){
+  .reference-hero{min-height:540px;}
+  .reference-hero-copy{padding-top:38px;padding-bottom:235px;}
+}
+
+
+/* ENHANCED ALUMNI CONNECT BRAND — homepage navbar only */
+.reference-navbar{min-height:76px;height:76px;}
+.reference-brand{gap:12px;font-size:inherit;text-decoration:none;transition:transform .22s ease,filter .22s ease;}
+.reference-brand:hover{transform:translateY(-2px);filter:drop-shadow(0 5px 9px rgba(26,103,214,.2));}
+.reference-brand-mark{width:42px;height:42px;flex:0 0 42px;clip-path:polygon(50% 0,94% 23%,94% 77%,50% 100%,6% 77%,6% 23%);background:linear-gradient(145deg,#68c4ff 0%,#2879ed 48%,#1247bd 100%);box-shadow:0 5px 13px rgba(28,104,220,.32);transition:transform .28s ease,box-shadow .28s ease;}
+.reference-brand-mark svg{width:27px;height:27px;color:#fff;filter:drop-shadow(0 1px 1px rgba(0,0,0,.12));}
+.reference-brand:hover .reference-brand-mark{transform:rotate(-8deg) scale(1.08);box-shadow:0 8px 18px rgba(28,104,220,.4);}
+.reference-brand-copy{display:flex;flex-direction:column;gap:3px;line-height:1.05;}
+.reference-brand-copy b{font-size:21px;letter-spacing:-.55px;font-weight:850;color:#123b80;}
+.reference-brand-copy small{font-size:8px;letter-spacing:1.15px;font-weight:800;color:#5791d7;}
+.reference-brand:focus-visible{outline:3px solid #80c5ff;outline-offset:5px;border-radius:8px;}
+@media(max-width:700px){
+ .reference-navbar{height:auto;min-height:70px;padding:10px 4%;}
+ .reference-brand{gap:9px;}
+ .reference-brand-mark{width:36px;height:36px;flex-basis:36px;}
+ .reference-brand-mark svg{width:23px;height:23px;}
+ .reference-brand-copy b{font-size:17px;}
+ .reference-brand-copy small{font-size:7px;letter-spacing:.8px;}
+}

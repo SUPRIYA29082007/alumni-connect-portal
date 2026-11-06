@@ -1,3 +1,4 @@
+
 import React,{useState} from "react";
 import {Link,useNavigate} from "react-router-dom";
 import api from "../../services/api";
@@ -13,9 +14,44 @@ export default function Login(){
     password:""
   });
 
+  const [role,setRole]=useState("student");
   const [err,setErr]=useState("");
   const [loading,setLoading]=useState(false);
   const [showPassword,setShowPassword]=useState(false);
+
+  const styles={
+    roleSelection:{
+      marginBottom:"22px"
+    },
+    roleLabel:{
+      fontSize:"14px",
+      fontWeight:"600",
+      marginBottom:"10px",
+      color:"#243b63"
+    },
+    roleTabs:{
+      display:"flex",
+      gap:"8px",
+      width:"100%"
+    },
+    roleTab:{
+      flex:1,
+      padding:"11px 6px",
+      border:"1px solid #d5dfed",
+      borderRadius:"8px",
+      background:"#ffffff",
+      color:"#29466f",
+      fontSize:"13px",
+      fontWeight:"600",
+      cursor:"pointer"
+    },
+    activeTab:{
+      background:"#2869d8",
+      border:"1px solid #2869d8",
+      color:"#ffffff",
+      boxShadow:"0 3px 9px rgba(40,105,216,0.2)"
+    }
+  };
 
   const c=e=>{
     setF({
@@ -25,6 +61,14 @@ export default function Login(){
   };
 
   const go=u=>{
+
+    if(u.user.role!==role){
+      setErr(
+        `This account is not registered as ${role}. Please select the correct role.`
+      );
+      return;
+    }
+
     localStorage.setItem("token",u.token);
     localStorage.setItem("user",JSON.stringify(u.user));
 
@@ -72,6 +116,37 @@ export default function Login(){
       subtitle="Sign in to ABC Engineering College Alumni Connect"
     >
 
+      <div style={styles.roleSelection}>
+
+        <p style={styles.roleLabel}>
+          Select Your Role
+        </p>
+
+        <div style={styles.roleTabs}>
+
+          {["student","alumni","admin"].map(item=>(
+            <button
+              key={item}
+              type="button"
+              onClick={()=>{
+                setRole(item);
+                setErr("");
+              }}
+              style={{
+                ...styles.roleTab,
+                ...(role===item?styles.activeTab:{})
+              }}
+            >
+              {item==="student"?"🎓 Student":
+               item==="alumni"?"👥 Alumni":
+               "🛡️ Admin"}
+            </button>
+          ))}
+
+        </div>
+
+      </div>
+
       <form
         className="auth-form"
         onSubmit={submit}
@@ -100,6 +175,7 @@ export default function Login(){
         </label>
 
         <div className="password-input-wrap">
+
           <input
             type={showPassword?"text":"password"}
             name="password"
@@ -107,9 +183,16 @@ export default function Login(){
             onChange={c}
             required
           />
-          <button type="button" className="password-toggle" onClick={()=>setShowPassword(!showPassword)} aria-label={showPassword?"Hide password":"Show password"}>
+
+          <button
+            type="button"
+            className="password-toggle"
+            onClick={()=>setShowPassword(!showPassword)}
+            aria-label={showPassword?"Hide password":"Show password"}
+          >
             {showPassword?"Hide":"Show"}
           </button>
+
         </div>
 
         <div className="form-row">
@@ -126,15 +209,11 @@ export default function Login(){
           className="submit-button"
           disabled={loading}
         >
-          {loading
-            ?"Signing in..."
-            :"Sign In →"
-          }
+          {loading?"Signing in...":"Sign In →"}
         </button>
 
       </form>
 
-      {/* KEEP GOOGLE SIGN IN */}
       <GoogleSignIn
         onSuccess={go}
         onError={setErr}

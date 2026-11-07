@@ -9,6 +9,7 @@ export default function GoogleSignIn({ onSuccess, onError }) {
 
     useEffect(() => {
         let tries = 0;
+        let timer;
 
         const init = () => {
             if (window.google?.accounts?.id && ref.current && clientId) {
@@ -16,12 +17,16 @@ export default function GoogleSignIn({ onSuccess, onError }) {
                     client_id: clientId,
                     callback: async response => {
                         try {
-                            const r = await api.post("/api/auth/google", {
+                            const r = await api.post("/auth/google", {
                                 credential: response.credential
                             });
+
                             onSuccess(r.data);
                         } catch (e) {
-                            onError(e.response?.data?.message || "Google sign-in failed");
+                            onError(
+                                e.response?.data?.message ||
+                                "Google sign-in failed"
+                            );
                         }
                     }
                 });
@@ -39,12 +44,17 @@ export default function GoogleSignIn({ onSuccess, onError }) {
             }
 
             if (tries++ < 30) {
-                setTimeout(init, 300);
+                timer = setTimeout(init, 300);
+            } else {
+                onError("Google Sign-In could not be initialized. Please refresh and try again.");
             }
         };
 
         init();
-        return () => {};
+
+        return () => {
+            if (timer) clearTimeout(timer);
+        };
     }, []);
 
     if (clientId) {
@@ -63,21 +73,27 @@ export default function GoogleSignIn({ onSuccess, onError }) {
             <div className="google-divider">
                 <span>or continue with</span>
             </div>
+
             <button
                 type="button"
                 className="google-fallback"
-                onClick={() => onError("Add VITE_GOOGLE_CLIENT_ID to frontend .env to enable Google Sign-In.")}
+                onClick={() =>
+                    onError(
+                        "Add VITE_GOOGLE_CLIENT_ID to frontend .env to enable Google Sign-In."
+                    )
+                }
             >
                 <span className="google-logo">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path fill="#4285F4" d="M21.35 12.2c0-.72-.06-1.42-.18-2.1H12v3.98h5.24a4.48 4.48 0 0 1-1.94 2.94v2.45h3.14c1.84-1.69 2.91-4.18 2.91-7.27Z"/>
-                        <path fill="#34A853" d="M12 21.5c2.63 0 4.84-.87 6.45-2.35l-3.14-2.45c-.87.58-1.98.92-3.31.92-2.54 0-4.69-1.72-5.46-4.03H3.3v2.53A9.74 9.74 0 0 0 12 21.5Z"/>
-                        <path fill="#FBBC05" d="M6.54 13.59A5.86 5.86 0 0 1 6.24 12c0-.55.1-1.09.3-1.59V7.88H3.3A9.74 9.74 0 0 0 2.25 12c0 1.57.38 3.06 1.05 4.12l3.24-2.53Z"/>
-                        <path fill="#EA4335" d="M12 6.38c1.43 0 2.71.49 3.72 1.45l2.79-2.79C16.83 3.46 14.63 2.5 12 2.5a9.74 9.74 0 0 0-8.7 5.38l3.24 2.53C7.31 8.1 9.46 6.38 12 6.38Z"/>
+                        <path fill="#4285F4" d="M21.35 12.2c0-.72-.06-1.42-.18-2.1H12v3.98h5.24a4.48 4.48 0 0 1-1.94 2.94v2.45h3.14c1.84-1.69 2.91-4.18 2.91-7.27Z" />
+                        <path fill="#34A853" d="M12 21.5c2.63 0 4.84-.87 6.45-2.35l-3.14-2.45c-.87.58-1.98.92-3.31.92-2.54 0-4.69-1.72-5.46-4.03H3.3v2.53A9.74 9.74 0 0 0 12 21.5Z" />
+                        <path fill="#FBBC05" d="M6.54 13.59A5.86 5.86 0 0 1 6.24 12c0-.55.1-1.09.3-1.59V7.88H3.3A9.74 9.74 0 0 0 2.25 12c0 1.57.38 3.06 1.05 4.12l3.24-2.53Z" />
+                        <path fill="#EA4335" d="M12 6.38c1.43 0 2.71.49 3.72 1.45l2.79-2.79C16.83 3.46 14.63 2.5 12 2.5a9.74 9.74 0 0 0-8.7 5.38l3.24 2.53C7.31 8.1 9.46 6.38 12 6.38Z" />
                     </svg>
                 </span>
                 <b>Continue with Google</b>
             </button>
+
             <small className="google-help">
                 Google Client ID is required for the real Google authentication popup.
             </small>
